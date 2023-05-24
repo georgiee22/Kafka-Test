@@ -44,6 +44,8 @@ services:
       # EXTRA_ARGS: -javaagent:./jmx_prometheus_javaagent-0.18.0.jar=9999:./kafka.yml
       # JMX_PORT: 1099
       # KAFKA_MESSAGE_MAX_BYTES: 2000000000
+    links:
+      - zookeeper
     # volumes:
     #   - ./jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
     #   - ./kafka.yml:/opt/kafka.yml
