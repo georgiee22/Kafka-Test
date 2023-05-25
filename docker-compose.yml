@@ -44,8 +44,6 @@ services:
       # EXTRA_ARGS: -javaagent:./jmx_prometheus_javaagent-0.18.0.jar=9999:./kafka.yml
       # JMX_PORT: 1099
       # KAFKA_MESSAGE_MAX_BYTES: 2000000000
-    links:
-      - zookeeper
     # volumes:
     #   - ./jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
     #   - ./kafka.yml:/opt/kafka.yml
@@ -58,42 +56,40 @@ services:
   #   volumes:
   #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
 
-  # kafka-connect:
-  #   image: confluentinc/cp-kafka-connect
-  #   container_name: kafka-connect
-  #   ports:
-  #     - "8083:8083"
-  #     - "9996:9996"
-  #   depends_on:
-  #     - zookeeper
-  #     - kafka1
-  #     - kafka2
-  #   environment:
-  #     CONNECT_BOOTSTRAP_SERVERS: 10.21.0.115:9092
-  #     CONNECT_GROUP_ID: connect-cluster
-  #     CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: true
-  #     CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: true
-  #     CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
-  #     CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3 #3
-  #     CONNECT_OFFSET_STORAGE_PARTITIONS: 25
-  #     CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
-  #     CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3 #3
-  #     CONNECT_STATUS_STORAGE_TOPIC: connect-status
-  #     CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3 #3
-  #     CONNECT_STATUS_STORAGE_PARTITIONS: 5
-  #     CONNECT_OFFSET_FLUSH_INTERVAL_MS: 60000
-  #     # CONNECT_LISTENERS: http://:8083
-  #     CONNECT_REST_ADVERTISED_HOST_NAME: 10.21.0.115
-  #     CONNECT_REST_ADVERTISED_PORT: 8083
-  #     # CONNECT_REST_ADVERTISED_LISTENER:
-  #     CONNECT_PLUGIN_PATH: /usr/share/java/kafka
-  #     KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9996:/opt/kafka.yml"
-  #   volumes:
-  #     - ./connect:/usr/share/java/kafka
-  #     - ./jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
-  #     - ./kafka.yml:/opt/kafka.yml
+  kafka-connect:
+    image: confluentinc/cp-kafka-connect
+    container_name: kafka-connect
+    ports:
+      - "8083:8083"
+      # - "9996:9996"
+    depends_on:
+      - kafka1
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: 10.21.0.115:9092
+      CONNECT_GROUP_ID: connect-cluster
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: true
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: true
+      CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1 #3
+      # CONNECT_OFFSET_STORAGE_PARTITIONS: 25
+      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1 #3
+      CONNECT_STATUS_STORAGE_TOPIC: connect-status
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1 #3
+      # CONNECT_STATUS_STORAGE_PARTITIONS: 5
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 60000
+      # CONNECT_LISTENERS: http://:8083
+      CONNECT_REST_ADVERTISED_HOST_NAME: 10.21.0.115
+      CONNECT_REST_ADVERTISED_PORT: 8083
+      # CONNECT_REST_ADVERTISED_LISTENER:
+      CONNECT_PLUGIN_PATH: /usr/share/java/kafka
+      # KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9996:/opt/kafka.yml"
+    volumes:
+      - ./connect:/usr/share/java/kafka
+      # - ./jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
+      # - ./kafka.yml:/opt/kafka.yml
 
   # kafka2:
   #   image: confluentinc/cp-kafka
