@@ -29,10 +29,10 @@ scrape_configs:
       - targets: ["localhost:9090"]
   - job_name: 'kafka1'
     static_configs:
-      - targets: ['10.21.0.105:9999']
+      - targets: ['192.168.0.77:9999']
   - job_name: 'kafka-connect'
     static_configs:
-      - targets: ['10.21.0.105:9998']
+      - targets: ['192.168.0.77:9998']
   # - job_name: 'zookeeper'
   #   static_configs:
   #     - targets: ['localhost:9995']
