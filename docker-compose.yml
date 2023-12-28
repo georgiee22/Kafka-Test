@@ -39,29 +39,29 @@ services:
       KAFKA_LOG_SEGMENT_BYTES: 1073741824 2147483647 2,147,483,647
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
-    #   KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9999:/opt/kafka.yml"
+      KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9999:/opt/kafka.yml"
       KAFKA_HEAP_OPTS: "-Xmx4g"
-    # volumes:
-    #   - ./jmx/jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
-    #   - ./jmx/kafka.yml:/opt/kafka.yml
+    volumes:
+      - ./jmx/jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
+      - ./jmx/kafka.yml:/opt/kafka.yml
 
-  # prometheus:
-  #   image: prom/prometheus
-  #   container_name: prometheus
-  #   ports:
-  #     - "9090:9191"
-  #   depends_on:
-  #     - kafka-connect
-  #   volumes:
-  #     - ./jmx/prometheus.yml:/etc/prometheus/prometheus.yml
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9191"
+    depends_on:
+      - kafka-connect
+    volumes:
+      - ./jmx/prometheus.yml:/etc/prometheus/prometheus.yml
     
-  # grafana:
-  #   image: grafana/grafana
-  #   container_name: grafana
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on: 
-  #     - prometheus
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on: 
+      - prometheus
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect
@@ -90,12 +90,10 @@ services:
       CONNECT_LISTENERS: http://:22028
       CONNECT_REST_ADVERTISED_HOST_NAME: 192.168.0.77
       CONNECT_REST_ADVERTISED_PORT: 22028
-      # CONNECT_REST_ADVERTISED_LISTENER: http://:22028
+      CONNECT_REST_ADVERTISED_LISTENER: http://:22028
       CONNECT_PLUGIN_PATH: /usr/share/java/kafka
-      # KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9998:/opt/kafka.yml"
-      KAFKA_HEAP_OPTS: "-Xms512m -Xmx6g"
+      KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9998:/opt/kafka.yml"
     volumes:
       - ./connect:/usr/share/java/kafka
-      # - ./jmx/jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
-      # - ./jmx/kafka.yml:/opt/kafka.yml
-      # - ./csv-test:/opt/csv-test
+      - ./jmx/jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
+      - ./jmx/kafka.yml:/opt/kafka.yml
