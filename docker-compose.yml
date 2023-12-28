@@ -23,11 +23,11 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.69.69.2:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.0.77:9092
       KAFKA_NUM_NETWORK_THREADS: 3
-      KAFKA_NUM_IO_THREADS: 8
-      KAFKA_SOCKET_SEND_BUFFER_BYTES: 102400
-      KAFKA_SOCKET_RECEIVE_BUFFER_BYTES: 102400
+      KAFKA_NUM_IO_THREADS: 16
+      KAFKA_SOCKET_SEND_BUFFER_BYTES: 1024000
+      KAFKA_SOCKET_RECEIVE_BUFFER_BYTES: 1024000
       KAFKA_SOCKET_REQUEST_MAX_BYTES: 104857600
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 #3
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 #3
@@ -36,43 +36,43 @@ services:
       # KAFKA_LOG_FLUSH_INTERVAL_MS: 1000
       KAFKA_LOG_RETENTION_HOURS: 168
       # KAFKA_LOG_RETENTION_BYTES: 1073741824
-      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824 2147483647 2,147,483,647
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
-      KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9999:/opt/kafka.yml"
+    #   KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9999:/opt/kafka.yml"
       KAFKA_HEAP_OPTS: "-Xmx4g"
-    volumes:
-      - ./jmx/jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
-      - ./jmx/kafka.yml:/opt/kafka.yml
+    # volumes:
+    #   - ./jmx/jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
+    #   - ./jmx/kafka.yml:/opt/kafka.yml
 
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    depends_on:
-      - kafka-connect
-    volumes:
-      - ./jmx/prometheus.yml:/etc/prometheus/prometheus.yml
+  # prometheus:
+  #   image: prom/prometheus
+  #   container_name: prometheus
+  #   ports:
+  #     - "9090:9191"
+  #   depends_on:
+  #     - kafka-connect
+  #   volumes:
+  #     - ./jmx/prometheus.yml:/etc/prometheus/prometheus.yml
     
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    depends_on: 
-      - prometheus
+  # grafana:
+  #   image: grafana/grafana
+  #   container_name: grafana
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on: 
+  #     - prometheus
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect
     container_name: kafka-connect
     ports:
-      - "8083:8083"
+      - "22028:22028"
       - "9998:9998"
     depends_on:
       - kafka1
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: 10.9.0.66:9092
+      CONNECT_BOOTSTRAP_SERVERS: 192.168.0.77:9092
       CONNECT_GROUP_ID: connect-cluster
       CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
@@ -87,14 +87,15 @@ services:
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1 #3
       # CONNECT_STATUS_STORAGE_PARTITIONS: 5
       CONNECT_OFFSET_FLUSH_INTERVAL_MS: 60000
-      # CONNECT_LISTENERS: http://:8083
-      CONNECT_REST_ADVERTISED_HOST_NAME: 10.9.0.66
-      CONNECT_REST_ADVERTISED_PORT: 8083
-      # CONNECT_REST_ADVERTISED_LISTENER:
+      CONNECT_LISTENERS: http://:22028
+      CONNECT_REST_ADVERTISED_HOST_NAME: 192.168.0.77
+      CONNECT_REST_ADVERTISED_PORT: 22028
+      # CONNECT_REST_ADVERTISED_LISTENER: http://:22028
       CONNECT_PLUGIN_PATH: /usr/share/java/kafka
-      KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9998:/opt/kafka.yml"
+      # KAFKA_OPTS: "-javaagent:/opt/jmx_prometheus_javaagent-0.18.0.jar=9998:/opt/kafka.yml"
+      KAFKA_HEAP_OPTS: "-Xms512m -Xmx6g"
     volumes:
       - ./connect:/usr/share/java/kafka
-      - ./jmx/jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
-      - ./jmx/kafka.yml:/opt/kafka.yml
+      # - ./jmx/jmx_prometheus_javaagent-0.18.0.jar:/opt/jmx_prometheus_javaagent-0.18.0.jar
+      # - ./jmx/kafka.yml:/opt/kafka.yml
       # - ./csv-test:/opt/csv-test

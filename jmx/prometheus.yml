@@ -33,6 +33,9 @@ scrape_configs:
   - job_name: 'kafka-connect'
     static_configs:
       - targets: ['192.168.0.77:9998']
+  - job_name: 'golang'
+    static_configs:
+      - targets: ['localhost:2112']
   # - job_name: 'zookeeper'
   #   static_configs:
   #     - targets: ['localhost:9995']
